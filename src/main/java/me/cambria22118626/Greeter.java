@@ -7,6 +7,7 @@ public class Greeter extends JFrame {
 
     private final int  WIDTH = 600;
     private final int HEIGHT = 400;
+    private final Config cfg = Config.getInstance();
 
     public Greeter() {
         System.out.println("Greetings!");
@@ -14,7 +15,7 @@ public class Greeter extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(WIDTH, HEIGHT);
         setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - WIDTH / 2,Toolkit.getDefaultToolkit().getScreenSize().height / 2 - HEIGHT / 2);
-        setBackground(Config.windowThemingColours.get("mainBG"));
+        setBackground(cfg.windowThemingColours.get("mainBG"));
         JPanel panel = new JPanel();
         getContentPane().add(panel);
         panel.setLayout(null);

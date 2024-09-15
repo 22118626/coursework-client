@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import me.cambria22118626.Config;
 
 public class Main {
+
     public static void main(String[] args) {
-        new Config();
         Path path = new File(System.getenv("USERPROFILE")+"\\.coursework-config").toPath();
         boolean firstLaunch = !Files.exists(path);
         if (firstLaunch) {

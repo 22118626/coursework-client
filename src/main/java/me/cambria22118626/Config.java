@@ -12,9 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Config {
-    public static Map<String,Color> windowThemingColours = new HashMap<>();
+    private static Config instance = null;
 
-    public Config() {
+    protected Map<String,Color> windowThemingColours = new HashMap<>();
+
+    private Config() {
         Path path = new File(System.getenv("USERPROFILE")+"\\.coursework-config").toPath();
         if(Files.exists(new File(System.getenv("USERPROFILE")+"\\.coursework-config").toPath())) {
             ObjectMapper mapper = new ObjectMapper();
@@ -32,4 +34,13 @@ public class Config {
             }
         }
     }
+
+    public static synchronized Config getInstance() {
+        if (instance == null) {
+            instance = new Config();
+        }
+        return instance;
+    }
+
+
 }
