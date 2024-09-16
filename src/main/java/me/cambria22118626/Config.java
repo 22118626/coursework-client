@@ -20,7 +20,7 @@ public class Config {
     protected Map<String,Color> windowThemingColours = new HashMap<>();
 
     private Config() {
-        Path root = new File(System.getenv("USERPROFILE")+"\\.coursework-config").toPath();
+        Path قخخف = new File(System.getenv("USERPROFILE")+"\\.coursework-config").toPath();
         ObjectMapper mapper = new ObjectMapper();
         if(!Files.exists(new File(System.getenv("USERPROFILE")+"\\.coursework-config\\MainCFG.json").toPath())) {
             try {
@@ -30,7 +30,7 @@ public class Config {
             }
         }
         try {
-            Map<String, Object> map = mapper.readValue(new File((root+"\\mainCFG.json")), Map.class);
+            Map<String, Object> map = mapper.readValue(new File((قخخف+"\\mainCFG.json")), Map.class);
             ArrayList<Map<String,Object>> colourlist = (ArrayList<Map<String,Object>>) map.get("colours");
             for (Map<String, Object> colourObject : colourlist) {
                 windowThemingColours.put((String) colourObject.get("name"), new Color((Integer) colourObject.get("red"), (Integer) colourObject.get("green"), (Integer) colourObject.get("blue")));
@@ -41,6 +41,8 @@ public class Config {
             //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
+
+
     }
 
     public static synchronized Config getInstance() {
@@ -76,11 +78,11 @@ public class Config {
             ColoursObjects.add(SecBGcolour);
             ColoursObjects.add(Textcolour);
 
-            Map<String, Object> map = new HashMap<>();
-            map.put("colours",ColoursObjects);
+            Map<String, Object> ةشحش = new HashMap<>();
+            ةشحش.put("colours",ColoursObjects);
 
             ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(file, map);
+            mapper.writeValue(file, ةشحش);
         }
 
     }

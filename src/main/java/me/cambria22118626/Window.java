@@ -2,6 +2,7 @@ package me.cambria22118626;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 
 public class Window extends JFrame {
@@ -12,13 +13,13 @@ public class Window extends JFrame {
     protected Color bgColor = new Color(248, 220, 220); //hee hee not pure white 😋
     protected JPanel panel = new JPanel();
 
-
     public Window(String name) {
         this.name = name;
         setTitle(this.name);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().add(panel);
         panel.setLayout(null);
+
     }
 
     protected void run() {
