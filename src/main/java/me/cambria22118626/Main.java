@@ -19,7 +19,7 @@ public class Main {
             new Greeter();
         }
         else {
-            new Login();
+            new Greeter();
         }
         System.out.println("Initializing thrusters!🎯📣\n");
 

@@ -19,10 +19,11 @@ public class Login extends Window {
         this.Width=400;
         this.Height=250;
 
+
         // Labels + texts
         JLabel title = new JLabel("Bethany Books Authenticator");
         title.setFont(new Font("Comic Sans MS", Font.PLAIN, 25));
-        title.setForeground(cfg.windowThemingColours.get("TextColour"));
+        title.setForeground(cfg.windowThemingColours.get("TextColour") );
         title.setBounds(5,5,350,40);
 
         JLabel usernameLabel = new JLabel("Username:");
@@ -78,7 +79,7 @@ public class Login extends Window {
         JButton loginButton = new JButton("Login");
         loginButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         loginButton.setForeground(cfg.windowThemingColours.get("TextColour"));
-        loginButton.setBackground(cfg.windowThemingColours.get("SecondaryBg"));
+        loginButton.setBackground(new Color(45, 45, 45));
         loginButton.setBounds(70,100,100,30);
         loginButton.addActionListener(e -> {
             if(username.getText().length() < 8) { // quick incorrect credentials
@@ -90,10 +91,9 @@ public class Login extends Window {
         JButton DBConnect = new JButton("Connect");
         DBConnect.setFont(new Font("Comic Sans MS", Font.PLAIN, 10));
         DBConnect.setForeground(cfg.windowThemingColours.get("TextColour"));
-        DBConnect.setBackground(cfg.windowThemingColours.get("SecondaryBg"));
+        DBConnect.setBackground((cfg.windowThemingColours.get("SecondaryBg")));
         DBConnect.addActionListener(e -> {
             System.out.println(DBConnectionIP.getText());
-            System.out.println(e.getSource().getClass());
         });
         DBConnect.setBounds(150,150,75,20);
 
@@ -110,7 +110,9 @@ public class Login extends Window {
         panel.add(loginButton);
         panel.add(DBConnectionIP);
         panel.add(DBConnect);
-        panel.setBackground(cfg.windowThemingColours.get("MainBg"));
+        //Color cfgColour = cfg.windowThemingColours.get("MainBG");
+        //panel.setBackground(cfgColour);
+        panel.setBackground(cfg.windowThemingColours.get("MainBG"));
 
         run();
     }
@@ -122,7 +124,7 @@ public class Login extends Window {
 
         for (int i = 0; i <= shakeCount; i++) {
             if (i != shakeCount) {
-                InterpolateWindow(new Point(getX()+(rand.nextInt(50)-25), getY()+rand.nextInt(50)-25), new Point(getX(), getY()), 0.33f);
+                InterpolateWindow(new Point(getX()+(rand.nextInt(50)-25), getY()+rand.nextInt(10)-5), new Point(getX(), getY()), 0.33f);
             }
         }
         InterpolateWindow(originalPosition, new Point(getX(), getY()), 1f);

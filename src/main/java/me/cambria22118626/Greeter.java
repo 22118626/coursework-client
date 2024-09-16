@@ -3,27 +3,34 @@ package me.cambria22118626;
 import javax.swing.*;
 import java.awt.*;
 
-public class Greeter extends JFrame {
+public class Greeter extends me.cambria22118626.Window {
 
     private final int  WIDTH = 600;
     private final int HEIGHT = 400;
     private final Config cfg = Config.getInstance();
 
     public Greeter() {
-        System.out.println("Greetings!");
-        setTitle("Greeter");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(WIDTH, HEIGHT);
-        setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - WIDTH / 2,Toolkit.getDefaultToolkit().getScreenSize().height / 2 - HEIGHT / 2);
-        setBackground(cfg.windowThemingColours.get("mainBG"));
-        JPanel panel = new JPanel();
-        getContentPane().add(panel);
-        panel.setLayout(null);
-        JLabel lblNewLabel = new JLabel("Greeting");
-        lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-        lblNewLabel.setBounds(10, 10, 90, 30);
-        panel.add(lblNewLabel);
-        panel.setVisible(true);
-        setVisible(true);
+        super("Greeter");
+
+        SpringLayout layout = new SpringLayout();
+        JLabel greetingTitle = new JLabel("Greetings!");
+        greetingTitle.setFont(new Font("Comic Sans MS", Font.BOLD, 36));
+        greetingTitle.setForeground(cfg.windowThemingColours.get("TextColour"));
+
+        JTextArea longTextArea = new JTextArea("peepee Poopoo");
+        longTextArea.setEditable(false);
+        longTextArea.setFont(new Font("Fira Code", Font.PLAIN, 16));
+        longTextArea.setForeground(cfg.windowThemingColours.get("TextColour"));
+        longTextArea.setBackground(cfg.windowThemingColours.get("MainBG"));
+        longTextArea.setLineWrap(true);
+
+        layout.putConstraint(SpringLayout.WEST, greetingTitle, 10, SpringLayout.WEST, longTextArea);
+        layout.putConstraint(SpringLayout.SOUTH, greetingTitle, 10, SpringLayout.NORTH, longTextArea);
+        OverridePanelLayout(layout);
+        panel.add(greetingTitle);
+        panel.add(longTextArea);
+        panel.setBackground(cfg.windowThemingColours.get("MainBG"));
+
+        run();
     }
 }
