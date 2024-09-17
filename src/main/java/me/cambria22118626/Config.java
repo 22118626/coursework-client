@@ -57,15 +57,15 @@ public class Config {
         if (!file.exists()) {
             HashMap<String, Object> MainBGcolour = new HashMap<>();
             MainBGcolour.put("name","MainBG");
-            MainBGcolour.put("red", 45);
-            MainBGcolour.put("green",45);
-            MainBGcolour.put("blue",45);
+            MainBGcolour.put("red", 28);
+            MainBGcolour.put("green",29);
+            MainBGcolour.put("blue",32);
 
             HashMap<String, Object> SecBGcolour = new HashMap<>();
             SecBGcolour.put("name","SecondaryBG");
-            SecBGcolour.put("red", 30);
-            SecBGcolour.put("green",30);
-            SecBGcolour.put("blue",30);
+            SecBGcolour.put("red", 45);
+            SecBGcolour.put("green",46);
+            SecBGcolour.put("blue",50);
 
             HashMap<String, Object> Textcolour = new HashMap<>();
             Textcolour.put("name","TextColour");

@@ -79,7 +79,7 @@ public class Login extends Window {
         JButton loginButton = new JButton("Login");
         loginButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         loginButton.setForeground(cfg.windowThemingColours.get("TextColour"));
-        loginButton.setBackground(new Color(45, 45, 45));
+        loginButton.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
         loginButton.setBounds(70,100,100,30);
         loginButton.addActionListener(e -> {
             if(username.getText().length() < 8) { // quick incorrect credentials
@@ -91,7 +91,7 @@ public class Login extends Window {
         JButton DBConnect = new JButton("Connect");
         DBConnect.setFont(new Font("Comic Sans MS", Font.PLAIN, 10));
         DBConnect.setForeground(cfg.windowThemingColours.get("TextColour"));
-        DBConnect.setBackground((cfg.windowThemingColours.get("SecondaryBg")));
+        DBConnect.setBackground((cfg.windowThemingColours.get("SecondaryBG")));
         DBConnect.addActionListener(e -> {
             System.out.println(DBConnectionIP.getText());
         });
