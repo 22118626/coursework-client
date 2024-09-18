@@ -94,6 +94,19 @@ public class Login extends Window {
         DBConnect.setBackground((cfg.windowThemingColours.get("SecondaryBG")));
         DBConnect.addActionListener(e -> {
             System.out.println(DBConnectionIP.getText());
+            ClientSock soc = ClientSock.getInstance();
+            String ip = "";
+            int port = 0;
+            for(String i : DBConnectionIP.getText().split("\\:")) {
+                if(i.contains(".") && i.length() >= 7) {
+                    ip = i;
+                }else if (! i.contains(".")) {
+                    port = Integer.parseUnsignedInt(i);
+                }
+            }
+            if (ip.length() > 2 && port >= 1080 && port <= 49151) {
+                soc.setServerAddress(ip, port);
+            }
         });
         DBConnect.setBounds(150,150,75,20);
 
@@ -110,9 +123,8 @@ public class Login extends Window {
         panel.add(loginButton);
         panel.add(DBConnectionIP);
         panel.add(DBConnect);
-        //Color cfgColour = cfg.windowThemingColours.get("MainBG");
-        //panel.setBackground(cfgColour);
-        panel.setBackground(cfg.windowThemingColours.get("MainBG"));
+        bgColour = cfg.windowThemingColours.get("MainBG");
+
 
         run();
     }

@@ -10,7 +10,7 @@ public class Window extends JFrame {
     protected int Width = 600;
     protected int Height = 400;
     public String name = "{None}";
-    protected Color bgColor = new Color(248, 220, 220); //hee hee not pure white 😋
+    protected Color bgColour = new Color(248, 0, 0); //hee hee not pure white 😋
     protected JPanel panel = new JPanel();
 
     public Window(String name) {
@@ -24,8 +24,10 @@ public class Window extends JFrame {
 
     protected void run() {
         setLocation(Toolkit.getDefaultToolkit().getScreenSize().width / 2 - Width / 2,Toolkit.getDefaultToolkit().getScreenSize().height / 2 - Height / 2);
-        setBackground(this.bgColor);
+        setBackground(this.bgColour);
         setSize(this.Width, this.Height);
+
+        System.out.println(this.getBackground());
 
         panel.setVisible(true);
         setVisible(true);
