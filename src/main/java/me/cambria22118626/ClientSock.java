@@ -11,11 +11,15 @@ import java.net.SocketAddress;
 
 public class ClientSock {
     private static ClientSock instance;
-    private SocketAddress serverAddress;
+    private String host;
+    private int port;
+    private Socket socket;
+
 
 
     private ClientSock() {
-        this.serverAddress = new InetSocketAddress("0.0.0.0", 42069);
+        this.host = "127.0.0.1";
+        this.port = 25565;
     }
 
     public static ClientSock getInstance() {
@@ -25,31 +29,48 @@ public class ClientSock {
         return instance;
     }
 
-    public void setServerAddress(SocketAddress soc) {
-        this.serverAddress = soc;
+    @Deprecated
+    public void setServerAddress(SocketAddress soc) throws RuntimeException {
+        for(String i3 : soc.toString().split(":")) {
+            if(i3.contains(".")) {
+                this.host = i3;
+            }
+            else {
+                this.port = Integer.getInteger(i3);
+            }
+        }
     }
 
-    public void setServerAddress(String ip, int port) {
-        this.serverAddress = new InetSocketAddress(ip, port);
+    public ClientSock setServerAddress(String ip, int port) {
+        this.host = ip;
+        this.port = port;
         start();
+        return this;
     }
+
 
     private void start() {
         try {
-            PrintWriter out;
-            BufferedReader in;
-
-            Socket clientSocket = new Socket("10.0.4.69", 25565);
-            out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-            out.println("Hello World");
-            String response = in.readLine();
-            System.out.println(response);
-
+            this.socket = new Socket(this.host, this.port);
         }
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String sendMessage(String message) throws IOException {
+        System.out.println(host.contains("^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)(\\.(?!$)|$)){4}$"));
+        System.out.println(port > 1024 && port < 49151);
+        if (this.socket == null || socket.isClosed() || !host.contains("^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)(\\.(?!$)|$)){4}$")) {
+            return null;
+        }
+
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+        out.println(message);
+        String response = in.readLine();
+        System.out.println(response);
+        return response;
     }
 }

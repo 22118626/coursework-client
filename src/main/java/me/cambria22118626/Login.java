@@ -6,6 +6,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.util.Random;
 
 
@@ -86,6 +87,12 @@ public class Login extends Window {
                 Toolkit.getDefaultToolkit().beep();
                 shake();
             }
+            try {
+                ClientSock.getInstance().sendMessage("Login ={"+username.getText()+"}\npassword ={"+new String(password.getPassword())+"}");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(new JFrame(), " Error has occured when sending packet to the server.\n\nHas the correct IP and port been entered for the database connection?", "Error", JOptionPane.ERROR_MESSAGE);
+                throw new RuntimeException(ex);
+            }
         });
 
         JButton DBConnect = new JButton("Connect");
@@ -105,7 +112,7 @@ public class Login extends Window {
                 }
             }
             if (ip.length() > 2 && port >= 1080 && port <= 49151) {
-                soc.setServerAddress(ip, port);
+                    soc.setServerAddress(ip, port);
             }
         });
         DBConnect.setBounds(150,150,75,20);
@@ -124,6 +131,7 @@ public class Login extends Window {
         panel.add(DBConnectionIP);
         panel.add(DBConnect);
         bgColour = cfg.windowThemingColours.get("MainBG");
+        panel.setBackground(cfg.windowThemingColours.get("MainBG"));
 
 
         run();
