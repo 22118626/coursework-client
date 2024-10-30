@@ -48,6 +48,9 @@ public class Greeter extends me.cambria22118626.Window {
         panel.add(confirmationButton, BorderLayout.SOUTH);
         panel.setBackground(cfg.windowThemingColours.get("MainBG"));
 
+
+        System.out.println(cfg.windowThemingColours.get("MainBG"));
+
         run();
     }
 }

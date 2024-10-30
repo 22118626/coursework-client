@@ -27,7 +27,7 @@ public class Window extends JFrame {
         setBackground(this.bgColour);
         setSize(this.Width, this.Height);
 
-        System.out.println(this.getBackground());
+        System.out.println("Background ->"+this.getBackground()+"\nBGColour ->"+this.bgColour);
 
         panel.setVisible(true);
         setVisible(true);

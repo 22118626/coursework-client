@@ -117,7 +117,12 @@ public class Login extends Window {
         });
         DBConnect.setBounds(150,150,75,20);
 
-
+        JButton settingsButton = new JButton("Settings");
+        settingsButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
+        settingsButton.setForeground(cfg.windowThemingColours.get("TextColour"));
+        settingsButton.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+        settingsButton.setBounds(275,170,100,20);
+        settingsButton.addActionListener(e -> {new SettingMenu();});
         /*
         Appending them all to the main frame of the window
          */
@@ -130,9 +135,10 @@ public class Login extends Window {
         panel.add(loginButton);
         panel.add(DBConnectionIP);
         panel.add(DBConnect);
+        panel.add(settingsButton);
         bgColour = cfg.windowThemingColours.get("MainBG");
         panel.setBackground(cfg.windowThemingColours.get("MainBG"));
-
+        super.bgColour=bgColour;
 
         run();
     }
@@ -172,5 +178,69 @@ public class Login extends Window {
         int Y = (int) (Math.round((1-t) * origPos.y) + (t*newPos.y));
         return new Point(X, Y);
     }
+
+    private class SettingMenu extends Window {
+        public SettingMenu() {
+            super("settings");
+            this.Width = 300;
+            this.Height = 400;
+
+            JLabel title = new JLabel("Settings");
+            title.setFont(new Font("Comic Sans MS", Font.PLAIN, 18));
+            title.setForeground(cfg.windowThemingColours.get("TextColour") );
+            title.setBounds(5,5,245,20);
+
+
+            JLabel certificateLabel = new JLabel("Certificate");
+            certificateLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
+            certificateLabel.setForeground(cfg.windowThemingColours.get("TextColour"));
+            certificateLabel.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+            certificateLabel.setBounds(5,20,150,20);
+
+            JTextField certificateIP = new JTextField();
+            certificateIP.setFont(new Font("Comic Sans MS", Font.PLAIN, 12));
+            certificateIP.setForeground(cfg.windowThemingColours.get("TextColour"));
+            certificateIP.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+            certificateIP.setBounds(5,50,100,20);
+
+            JButton certificateRetrieve = new JButton("Retrieve Certificate");
+            certificateRetrieve.setFont(new Font("Comic Sans MS", Font.PLAIN, 10));
+            certificateRetrieve.setForeground(cfg.windowThemingColours.get("TextColour"));
+            certificateRetrieve.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+            certificateRetrieve.setBounds(100,50,150,20);
+            certificateRetrieve.addActionListener(e -> {
+                String ip = "";
+                int port = 0;
+                for(String i : certificateIP.getText().split(":")) {
+                    if(i.contains(".") && i.length() >= 7) {
+                        ip = i;
+                    }else if (! i.contains(".")) {
+                        port = Integer.parseUnsignedInt(i);
+                    }
+                }
+                if (ip.length() > 2 && port >= 1080 && port <= 49151) {
+                    Certificate cert = new Certificate();
+                    Boolean result = cert.createCertificateFromServer(ip, port);
+                    if (result) {
+                        JOptionPane.showMessageDialog(null, "Certificate created");
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(null, "Certificate not created successfully");
+                    }
+                }
+            });
+
+            panel.add(title);
+            panel.add(certificateLabel);
+            panel.add(certificateIP);
+            panel.add(certificateRetrieve);
+            panel.setBackground(cfg.windowThemingColours.get("MainBG"));
+
+            this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+            run();
+        }
+    }
+
 
 }
