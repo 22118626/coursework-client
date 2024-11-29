@@ -7,6 +7,8 @@ import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.Random;
 
 
@@ -20,6 +22,7 @@ public class Login extends Window {
         this.Width=400;
         this.Height=250;
 
+        System.out.println(encryptString("3ae8be7283930bbad035636d1ca17f4d87050b248a83b1761f3c38901289b70f"+"1234"));
 
         // Labels + texts
         JLabel title = new JLabel("Bethany Books Authenticator");
@@ -88,7 +91,8 @@ public class Login extends Window {
                 shake();
             }
             try {
-                ClientSock.getInstance().sendMessage("Login ={"+username.getText()+"}\npassword ={"+new String(password.getPassword())+"}");
+                String result = ClientSock.getInstance().sendMessage("{\"mode\":\"authenticate\",\"data\":{\"field\":\""+username.getText()+"\",\"value\":\""+new String(password.getPassword())+"\"}}");
+                System.out.println(result);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(new JFrame(), " Error has occured when sending packet to the server.\n\nHas the correct IP and port been entered for the database connection?", "Error", JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(ex);
@@ -138,7 +142,6 @@ public class Login extends Window {
         panel.add(settingsButton);
         bgColour = cfg.windowThemingColours.get("MainBG");
         panel.setBackground(cfg.windowThemingColours.get("MainBG"));
-        super.bgColour=bgColour;
 
         run();
     }
@@ -239,6 +242,22 @@ public class Login extends Window {
             this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
             run();
+        }
+    }
+
+    public static String encryptString(String str){
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(str.getBytes());
+            BigInteger number = new BigInteger(1, hash);
+            StringBuilder hashText = new StringBuilder(number.toString(16));
+            while (hashText.length() < 32) {
+                hashText.insert(0, "0");
+            }
+            return hashText.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+            e.getCause();
+            return "";
         }
     }
 

@@ -17,12 +17,13 @@ import java.util.Properties;
 public class Config {
     private static Config instance = null;
 
+    private static File loc = new File(System.getenv("USERPROFILE")+"\\.coursework-config");
+
     protected Map<String,Color> windowThemingColours = new HashMap<>();
 
     private Config() {
-        Path قخخف = new File(System.getenv("USERPROFILE")+"\\.coursework-config").toPath();
         ObjectMapper mapper = new ObjectMapper();
-        if(!Files.exists(new File(System.getenv("USERPROFILE")+"\\.coursework-config\\MainCFG.json").toPath())) {
+        if(!Files.exists(Path.of(loc.getAbsolutePath() + "\\MainCFG.json"))) {
             try {
                 createDefaultConfig();
             } catch (IOException e) {
@@ -30,7 +31,7 @@ public class Config {
             }
         }
         try {
-            Map<String, Object> map = mapper.readValue(new File((قخخف+"\\mainCFG.json")), Map.class);
+            Map<String, Object> map = mapper.readValue(new File(loc+"\\mainCFG.json"), Map.class);
             ArrayList<Map<String,Object>> colourlist = (ArrayList<Map<String,Object>>) map.get("colours");
             for (Map<String, Object> colourObject : colourlist) {
                 windowThemingColours.put((String) colourObject.get("name"), new Color((Integer) colourObject.get("red"), (Integer) colourObject.get("green"), (Integer) colourObject.get("blue")));
@@ -85,6 +86,10 @@ public class Config {
             mapper.writeValue(file, ةشحش);
         }
 
+    }
+
+    public static File getFile() {
+        return loc;
     }
 
 
