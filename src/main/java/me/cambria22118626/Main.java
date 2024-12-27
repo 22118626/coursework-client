@@ -7,9 +7,13 @@ import java.nio.file.Path;
 import me.cambria22118626.Config;
 
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class Main {
+
+    public static Map<String, Object> persistMemJson = new HashMap<String, Object>();
 
     public static void main(String[] args) {
 

@@ -1,5 +1,9 @@
 package me.cambria22118626;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -9,6 +13,8 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.Random;
 
 
@@ -86,13 +92,24 @@ public class Login extends Window {
         loginButton.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
         loginButton.setBounds(70,100,100,30);
         loginButton.addActionListener(e -> {
+
             if(username.getText().length() < 8) { // quick incorrect credentials
                 Toolkit.getDefaultToolkit().beep();
                 shake();
             }
             try {
-                String result = ClientSock.getInstance().sendMessage("{\"mode\":\"authenticate\",\"data\":{\"field\":\""+username.getText()+"\",\"value\":\""+new String(password.getPassword())+"\"}}");
+                String HashedP = encryptString(Arrays.toString(password.getPassword())+username.getText());
+                String result = ClientSock.getInstance().sendMessage("{\"mode\":\"authenticate\",\"data\":{\"username\":\""+username.getText()+"\",\"password\":\""+HashedP+"\"}}");
                 System.out.println(result);
+                ObjectMapper OM = new ObjectMapper();
+                Map<String, Object> resultJ = OM.readValue(result, Map.class);
+                if ((Boolean) (resultJ.get("access"))) {
+                    Main.persistMemJson.put("Username", username.getText());
+                    Main.persistMemJson.put("HashedPassword", HashedP);
+                    Main.persistMemJson.put("IPAddress", DBConnectionIP.getText());
+                    new MainMenu();
+                    this.dispose();
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(new JFrame(), " Error has occured when sending packet to the server.\n\nHas the correct IP and port been entered for the database connection?", "Error", JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(ex);
@@ -251,9 +268,10 @@ public class Login extends Window {
             byte[] hash = digest.digest(str.getBytes());
             BigInteger number = new BigInteger(1, hash);
             StringBuilder hashText = new StringBuilder(number.toString(16));
-            while (hashText.length() < 32) {
+            while (hashText.length() < 64) {
                 hashText.insert(0, "0");
             }
+            System.out.println(hashText.toString());
             return hashText.toString();
         } catch (java.security.NoSuchAlgorithmException e) {
             e.getCause();
