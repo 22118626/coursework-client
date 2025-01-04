@@ -143,6 +143,7 @@ public class ClientSock {
     }
 
     public String sendMessage(String message) throws IOException {
+        this.start();
         PrintWriter out = new PrintWriter(sslSocket.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
 
@@ -150,6 +151,9 @@ public class ClientSock {
         System.out.println("Connected to " + sslSocket.getInetAddress().getHostAddress() + ":" + sslSocket.getPort());
 
         String response = in.readLine();
+        if(response == null) {
+            throw new IOException("Connection closed by server");
+        }
         System.out.println("Response: " + response);
         return response;
     }

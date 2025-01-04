@@ -107,6 +107,7 @@ public class Login extends Window {
                     Main.persistMemJson.put("Username", username.getText());
                     Main.persistMemJson.put("HashedPassword", HashedP);
                     Main.persistMemJson.put("IPAddress", DBConnectionIP.getText());
+                    Main.persistMemJson.put("loginCreds", resultJ.get("data"));
                     new MainMenu();
                     this.dispose();
                 }
