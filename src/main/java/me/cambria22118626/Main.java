@@ -9,11 +9,13 @@ import me.cambria22118626.Config;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 
 public class Main {
 
     public static Map<String, Object> persistMemJson = new HashMap<String, Object>();
+    public static Vector<Map<String, Object>> tables = new Vector<>();
 
     public static void main(String[] args) {
 

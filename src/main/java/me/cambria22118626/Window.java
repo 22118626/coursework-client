@@ -30,6 +30,8 @@ public class Window extends JFrame {
         System.out.println("Background ->"+this.getBackground()+"\nBGColour ->"+this.bgColour);
 
         panel.setVisible(true);
+        panel.revalidate();
+        panel.repaint();
         setVisible(true);
 
     }
