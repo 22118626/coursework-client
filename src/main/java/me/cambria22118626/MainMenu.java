@@ -4,6 +4,7 @@ import me.cambria22118626.ClientSock;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.File;
@@ -40,7 +41,7 @@ public class MainMenu extends Window{
             if(responseJ == null) throw new Exception(); //just to sanity check that there will be no runtime errors
             if (!responseJ.containsKey("data") || !(responseJ.get("data") instanceof Map)) throw new Exception();
 
-            List<Map<String, Object>> array= (List<Map<String, Object>>) ((Map<String, Object>) responseJ.get("data")).get("array");
+            List<Map<String, Object>> array = (List<Map<String, Object>>) ((Map<String, Object>) responseJ.get("data")).get("array");
             for (int i = 0; i < array.size(); i++) {
                 Main.tables.add(array.get(i));
                 System.out.println(array.get(i).get("tableName"));
@@ -62,7 +63,10 @@ public class MainMenu extends Window{
             btn.setForeground(cfg.windowThemingColours.get("TextColour"));
             btn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
             btn.setPreferredSize(new Dimension(200, 120));
-            btn.setBackground(new Color(+((int) (Math.random()*20+5) << 16) + ((int) (Math.random()*20) << 8) + (int) (Math.random()*64+32) )); // R=5-25, G=0-20, B=32-96
+            btn.setBackground(new Color(((int) (Math.random()*20+5) << 16) + ((int) (Math.random()*20) << 8) + (int) (Math.random()*64+32) )); // R=5-25, G=0-20, B=32-96
+            btn.addActionListener(e -> {
+                new TableMenu(table.get("tableName").toString(), table);
+            });
             grid.add(btn);
         }
         for(int i = 1; i<=30; i++) {
@@ -70,7 +74,7 @@ public class MainMenu extends Window{
             btn.setForeground(cfg.windowThemingColours.get("TextColour"));
             btn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
             btn.setPreferredSize(new Dimension(200, 120));
-            btn.setBackground(new Color(+((int) (Math.random()*5+Math.sin(i/8)*10) << 16) + ((int) (Math.random()*10+Math.sin(i/8)*30) << 8) + (int) (Math.random()*16+Math.sin(i/10)*15+48) )); // R=5-25, G=0-20, B=32-96
+            btn.setBackground(new Color(((int) (Math.random()*5+Math.sin((double) i /8)*10) << 16) + ((int) (Math.random()*10+Math.sin((double) i /8)*30) << 8) + (int) (Math.random()*16+Math.sin((double) i /10)*15+48) )); // R=5-25, G=0-20, B=32-96
             grid.add(btn);
             System.out.println("Button "+i);
         }

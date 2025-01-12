@@ -36,8 +36,7 @@ public class Window extends JFrame {
 
     }
 
-    protected void OverridePanelLayout(LayoutManager layout) {
-        panel.setLayout(layout);
-    }
+    protected void OverridePanelLayout(LayoutManager layout) {panel.setLayout(layout);}
+    protected void OverridePanelClose(int option) {setDefaultCloseOperation(option);}
 }
 

@@ -241,7 +241,7 @@ public class Login extends Window {
                 }
                 if (ip.length() > 2 && port >= 1080 && port <= 49151) {
                     Certificate cert = new Certificate();
-                    Boolean result = cert.createCertificateFromServer(ip, port);
+                    boolean result = cert.createCertificateFromServer(ip, port);
                     if (result) {
                         JOptionPane.showMessageDialog(null, "Certificate created");
                     }
