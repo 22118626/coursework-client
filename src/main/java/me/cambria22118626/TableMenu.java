@@ -125,7 +125,15 @@ public class TableMenu extends Window{
                             }
                         }
                     }
-                    soc.sendMessage("{\"mode\":\"append\",\"tableName\":\""+this.name+"\",\"data\":"+OM.writeValueAsString(data)+",\"authentication\":"+OM.writeValueAsString(Main.persistMemJson.get("loginCreds"))+"}");
+                    String res = soc.sendMessage("{\"mode\":\"append\",\"tableName\":\""+this.name+"\",\"data\":"+OM.writeValueAsString(data)+",\"authentication\":"+OM.writeValueAsString(Main.persistMemJson.get("loginCreds"))+"}");
+                    JsonNode Jres = OM.readTree(res);
+                    if (Jres.get("code").asInt() == 0) {
+                        System.out.println("Creating record success!");
+                        this.Menu();
+                        this.Width = getWidth();
+                        this.Height = getHeight();
+                        run();
+                    }
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -133,6 +141,8 @@ public class TableMenu extends Window{
             c.gridy += 2;
             c.gridx = 1;
             panel.add(ConfirmBtn, c);
+            repaint();
+            revalidate();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
