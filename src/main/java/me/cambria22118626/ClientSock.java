@@ -146,7 +146,7 @@ public class ClientSock {
         this.start();
         PrintWriter out = new PrintWriter(sslSocket.getOutputStream(), true);
         BufferedReader in = new BufferedReader(new InputStreamReader(sslSocket.getInputStream()));
-
+        System.out.println(message);
         out.println(message);
         System.out.println("Connected to " + sslSocket.getInetAddress().getHostAddress() + ":" + sslSocket.getPort());
 

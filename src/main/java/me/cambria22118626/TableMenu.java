@@ -116,12 +116,18 @@ public class TableMenu extends Window{
                             JTextField field = (JTextField) comp;
                             String fieldName = field.getName();
                             for(JsonNode entry : jArray) {
+                                System.out.println("entry: "+entry.get("name")+" "+entry.get("type"));
                                 if(entry.get("name").asText().equals(fieldName) && (entry.get("type").asInt()==1 || entry.get("type").asInt() == 2)) {
                                     data.put(fieldName, Integer.parseInt(field.getText()));
-                                }else {
+                                }else if(entry.get("type").asInt()==4) {
+                                    Map<String,Object> nestedMap = new HashMap<>();
+                                    nestedMap.put("value", Integer.parseInt(field.getText()));
+                                    data.put(fieldName, nestedMap);
+                                }
+                                /*else {
                                     String fieldValue = field.getText();
                                     data.put(fieldName, fieldValue);
-                                }
+                                }*/
                             }
                         }
                     }
