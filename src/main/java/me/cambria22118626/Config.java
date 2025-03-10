@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+
+
 public class Config {
     private static Config instance = null;
 
@@ -31,6 +33,7 @@ public class Config {
             }
         }
         try {
+            //parses data from mainCFG json file to allow customisation of the program
             Map<String, Object> map = mapper.readValue(new File(loc+"\\mainCFG.json"), Map.class);
             ArrayList<Map<String,Object>> colourlist = (ArrayList<Map<String,Object>>) map.get("colours");
             for (Map<String, Object> colourObject : colourlist) {
@@ -45,7 +48,7 @@ public class Config {
 
 
     }
-
+    //singleton get instance method
     public static synchronized Config getInstance() {
         if (instance == null) {
             instance = new Config();
@@ -53,6 +56,7 @@ public class Config {
         return instance;
     }
 
+    // only ran if corrupted or the file does not exist
     private static synchronized void createDefaultConfig() throws IOException {
         File file = new File(System.getenv("USERPROFILE")+"\\.coursework-config\\mainCFG.json");
         if (!file.exists()) {

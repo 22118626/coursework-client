@@ -1,15 +1,13 @@
 package me.cambria22118626;
 
-import com.fasterxml.jackson.core.JsonParser;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +16,7 @@ public class TableMenu extends Window{
     private Map<String, Object> table;
     private final Config cfg = Config.getInstance();
 
+    // initial settings for the menu
     public TableMenu(String name, Map<String, Object> table) {
         super(name);
         this.table = table;
@@ -28,10 +27,11 @@ public class TableMenu extends Window{
 
         run();
         OverridePanelClose(JFrame.DISPOSE_ON_CLOSE);
-        Menu();
+        Menu(); // runs the main section
     }
 
     private void Menu() {
+        // clear all the previous items in the window then add new ones in their place Advantages:: all windows settings re intact such as size and position
         panel.removeAll();
         OverridePanelLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -39,6 +39,7 @@ public class TableMenu extends Window{
         c.weightx = 1.0;
         c.weighty = 1.0;
 
+        // create main control buttions for each table Creade view and remove
         JButton create = new JButton("Create record");
         create.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
         create.setPreferredSize(new Dimension(200, 120));
@@ -69,7 +70,7 @@ public class TableMenu extends Window{
         panel.add(delete, c);
     }
 
-    private void CreateWindow() {
+    private void CreateWindow() { //create window that controlls all the creating of a new record
         panel.removeAll();
         OverridePanelLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -87,6 +88,8 @@ public class TableMenu extends Window{
             GridBagConstraints labelcon = c;
             GridBagConstraints entrycon = c;
             entrycon.gridy = c.gridy+1;
+
+            //this gets all the names of the columns in the database table
             for (int i = 0; i < jArray.size(); i++) {
                 JsonNode field = jArray.get(i);
 
@@ -104,12 +107,15 @@ public class TableMenu extends Window{
                 panel.add(entry, c);
                 c.gridy--;
             }
+
+            //shows a confirmation window
             JButton ConfirmBtn = new JButton("append");
             ConfirmBtn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
             ConfirmBtn.setForeground(cfg.windowThemingColours.get("TextColour"));
             ConfirmBtn.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
             ConfirmBtn.addActionListener(e->{if (Confirmation()) {
                 try {
+                    //creates a json data that will be sent to the server and will show if it was a success it not
                     ClientSock soc = ClientSock.getInstance();
                     Map<String, Object> data = getDataFromTextFields(panel, array);
                     String res = soc.sendMessage("{\"mode\":\"append\",\"tableName\":\""+this.name+"\",\"data\":"+OM.writeValueAsString(data)+",\"authentication\":"+OM.writeValueAsString(Main.persistMemJson.get("loginCreds"))+"}");
@@ -167,7 +173,7 @@ public class TableMenu extends Window{
         return data;
     }
 
-
+    //works similarly to the create window
     private void ViewModWindow() {
         panel.removeAll();
         OverridePanelLayout(new GridBagLayout());
@@ -180,6 +186,7 @@ public class TableMenu extends Window{
 
         ObjectMapper OM = new ObjectMapper();
         try {
+            //add all the names of columns in the table in the database
             String array = OM.writeValueAsString(table.get("array"));
             JsonNode jArray = OM.readTree(array);
             c.gridy=1;
@@ -204,6 +211,7 @@ public class TableMenu extends Window{
                 panel.add(entry, c);
                 c.gridy--;
             }
+            //uses the data entered to query the databse if the record exists and places the retrieved data into the correct boxes
             JButton FindBtn = new JButton("find");
             FindBtn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
             FindBtn.setForeground(cfg.windowThemingColours.get("TextColour"));
@@ -239,6 +247,7 @@ public class TableMenu extends Window{
                     String res = soc.sendMessage("{\"mode\":\"search\",\"tableName\":\""+this.name+"\",\"data\":"+OM.writeValueAsString(data)+",\"authentication\":"+OM.writeValueAsString(Main.persistMemJson.get("loginCreds"))+"}");
                     JsonNode Jres = OM.readTree(res);
                     if (Jres.get("code").asInt() == 0) {
+                        // the record was foung and will be placed it the boxes
                         System.out.println("finding record success!\ndata:"+OM.writeValueAsString(Jres).indent(2));
                         String msg = "";
                         JsonNode rootNode = Jres.get("data");
@@ -267,6 +276,7 @@ public class TableMenu extends Window{
                         }
                         System.out.println(hasModifyBtn+" "+hasDeleteBtn);
                         if(!hasDeleteBtn && !hasModifyBtn) {
+                            //create and send a json string to the server that will delete the record
                             JButton DelBtn = new JButton("Delete");
                             DelBtn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
                             DelBtn.setForeground(cfg.windowThemingColours.get("TextColour"));
@@ -280,7 +290,7 @@ public class TableMenu extends Window{
                                 }
 
                             });
-
+                            //initialize gridbag constrintts
                             GridBagConstraints gbc = new GridBagConstraints();
                             gbc.fill = GridBagConstraints.BOTH;
                             gbc.weightx = 1.0;
@@ -295,9 +305,10 @@ public class TableMenu extends Window{
                             ModBtn.setForeground(cfg.windowThemingColours.get("TextColour"));
                             ModBtn.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
                             ModBtn.addActionListener(e1 -> {
+                                //creates and sends a modify command to the server that will modify the record based on the primary key of the record
                                 try {
                                     Map<String, Object> values = getDataFromTextFields(panel, array);
-                                    String message = "{\"mode\":\"modify\",\"tableName\":\""+this.name+"\",\"data\":"+OM.writeValueAsString(values)+"\"oldData\":"+OM.writeValueAsString(data)+",\"authentication\":"+OM.writeValueAsString(Main.persistMemJson.get("loginCreds"))+"}";
+                                    String message = "{\"mode\":\"modify\",\"tableName\":\""+this.name+"\",\"data\":"+OM.writeValueAsString(values)+",\"oldData\":"+OM.writeValueAsString(data)+",\"authentication\":"+OM.writeValueAsString(Main.persistMemJson.get("loginCreds"))+"}";
                                     System.out.println(message);
                                     String removeRes = soc.sendMessage(message);
                                 } catch (IOException ex) {

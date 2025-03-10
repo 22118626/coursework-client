@@ -61,10 +61,8 @@ public class Certificate {
             return true;
 
         } catch (java.net.SocketException e) {
-            // Handle connection reset error
             System.err.println("Connection reset error: " + e.getMessage());
         } catch (Exception e) {
-            // Handle other potential exceptions
             e.printStackTrace();
         }
         return false;

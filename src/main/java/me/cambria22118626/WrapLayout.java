@@ -1,7 +1,9 @@
 package me.cambria22118626;
 
-
+/*** MY NOTE:  */
 /**
+ * this is a function that tips4jave has made because there is no native swing fucntion for a wrapper function that can display buttons corerctly in a frame that can expand and wrap the buttopns
+ * the closes native function packs all the buttons in a single row and goes off-screen
  * Original Creator Credits: https://github.com/tips4java
  */
 

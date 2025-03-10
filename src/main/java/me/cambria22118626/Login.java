@@ -1,7 +1,6 @@
 package me.cambria22118626;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonNode;
+//necesarry imports
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.swing.*;
@@ -9,8 +8,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.awt.geom.Point2D;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -19,18 +16,22 @@ import java.util.Random;
 
 
 public class Login extends Window {
+    //object attributes
     public static int IPInputError = 0;
     private final Config cfg = Config.getInstance();
 
+    // this method controls main login window that is displayed
     public Login(){
 
+        //inheritence from me.cambria2211826.Window class
+        // and makes the window with default width and height
         super("Login");
         this.Width=400;
         this.Height=250;
 
-        System.out.println(encryptString("3ae8be7283930bbad035636d1ca17f4d87050b248a83b1761f3c38901289b70f"+"1234"));
+        //System.out.println(encryptString("3ae8be7283930bbad035636d1ca17f4d87050b248a83b1761f3c38901289b70f"+"1234")); //debugg line
 
-        // Labels + texts
+        // created components in the window
         JLabel title = new JLabel("Bethany Books Authenticator");
         title.setFont(new Font("Comic Sans MS", Font.PLAIN, 25));
         title.setForeground(cfg.windowThemingColours.get("TextColour") );
@@ -53,7 +54,7 @@ public class Login extends Window {
         password.setForeground(Color.BLACK);
         password.setBounds(110,75,100,20);
 
-
+        //this binds a function to the DBConnection entry window to validate that only numbers and IP specific characters are entered:(0-9 OR . OR :)
         JTextField DBConnectionIP = new JTextField();
         DBConnectionIP.setFont(new Font("Visitor TT1 BRK", Font.PLAIN, 16));
         DBConnectionIP.setForeground(Color.BLACK);
@@ -69,6 +70,7 @@ public class Login extends Window {
                         if(!(character == '.' || (  character >= '0' && character <= '9' ) || character ==':')) { //shows warning window if input wrong the first time then every 5 incorrect formats, if the character inputted was not '.' ':' or a range between 0:9
                             e.getDocument().remove(e.getOffset(), 1);
                             Toolkit.getDefaultToolkit().beep();
+                            //shows an warning window if every 5 incorrect characters input into thefield
                             if (Login.IPInputError++ % 5 == 0) {
                                 JOptionPane.showMessageDialog(new JFrame(), "Please only enter 0-9, '.' and ':'", "warning", JOptionPane.WARNING_MESSAGE);
 
@@ -85,19 +87,25 @@ public class Login extends Window {
         DBConnectionIP.setBounds(5,150,100,20);
 
 
-        // Buttons
+        // create Buttons and bind them with their respective functions
         JButton loginButton = new JButton("Login");
         loginButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         loginButton.setForeground(cfg.windowThemingColours.get("TextColour"));
         loginButton.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
         loginButton.setBounds(70,100,100,30);
         loginButton.addActionListener(e -> {
-
-            if(username.getText().length() < 8) { // quick incorrect credentials
+            System.out.println("encrypted: ("+encryptString(Arrays.toString(password.getPassword())+username.getText())+")");
+            if(username.getText().length() < 8) { // validation of credentials
                 Toolkit.getDefaultToolkit().beep();
                 shake();
+                JOptionPane.showMessageDialog(new JFrame(), "Username is too short", "warning", JOptionPane.WARNING_MESSAGE);
+                return;
             }
             try {
+                //this code will create a SHA256 hash of the Password+username strings concatenated
+                // together and send them to the me.cambria2211826.ClientSock to send to the server and will await for the
+                // response. if bad response show error
+
                 String HashedP = encryptString(Arrays.toString(password.getPassword())+username.getText());
                 String result = ClientSock.getInstance().sendMessage("{\"mode\":\"authenticate\",\"data\":{\"username\":\""+username.getText()+"\",\"password\":\""+HashedP+"\"}}");
                 System.out.println(result);
@@ -117,6 +125,9 @@ public class Login extends Window {
             }
         });
 
+        // DBConnect button uses the IP entered into the DBConnect entry field to bind a listening socket to
+        // a port where data will be sent to the server and listened from the server
+
         JButton DBConnect = new JButton("Connect");
         DBConnect.setFont(new Font("Comic Sans MS", Font.PLAIN, 10));
         DBConnect.setForeground(cfg.windowThemingColours.get("TextColour"));
@@ -126,6 +137,7 @@ public class Login extends Window {
             ClientSock soc = ClientSock.getInstance();
             String ip = "";
             int port = 0;
+            // split the text from the field into individual IP and Port variables and required by the WinSock function
             for(String i : DBConnectionIP.getText().split("\\:")) {
                 if(i.contains(".") && i.length() >= 7) {
                     ip = i;
@@ -133,22 +145,23 @@ public class Login extends Window {
                     port = Integer.parseUnsignedInt(i);
                 }
             }
+            //ensure that the port is longer then 2 digits and is not trying to bind to any protected ranges and is not larger than the current standard states
             if (ip.length() > 2 && port >= 1080 && port <= 49151) {
                     soc.setServerAddress(ip, port);
             }
         });
         DBConnect.setBounds(150,150,75,20);
 
+        //shows setting menu when pressed
         JButton settingsButton = new JButton("Settings");
         settingsButton.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
         settingsButton.setForeground(cfg.windowThemingColours.get("TextColour"));
         settingsButton.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
         settingsButton.setBounds(275,170,100,20);
         settingsButton.addActionListener(e -> {new SettingMenu();});
-        /*
-        Appending them all to the main frame of the window
-         */
 
+
+        //Appending all components to the main frame of the window
         panel.add(title);
         panel.add(usernameLabel);
         panel.add(username);
@@ -164,6 +177,9 @@ public class Login extends Window {
         run();
     }
 
+
+    // fun method that will get the X and Y coordinates of the window and pick a new random position within the
+    // displat and interpolate the window between 2 XY coordinates and then return it back to the original position.
     private void shake() {
         Point originalPosition = new Point(this.getX(), this.getY());
         int shakeCount = 10;
@@ -177,6 +193,7 @@ public class Login extends Window {
         InterpolateWindow(originalPosition, new Point(getX(), getY()), 1f);
     }
 
+    // makes a smooth transition moving the window a small amout per frame rendered
     private void InterpolateWindow(Point newPos, Point origPos, Float time) {
         int hz = 60;
         for (int frame = 0; frame < 60*time; frame++) {
@@ -190,6 +207,7 @@ public class Login extends Window {
         }
     }
 
+    // yeah... does what it says.
     private Point bezier2PointFunction(Point newPos, Point origPos, double t) {
         /*
         * Formula for 2 point Bezier curve:
@@ -200,6 +218,8 @@ public class Login extends Window {
         return new Point(X, Y);
     }
 
+
+    //setting menu in the login screen to modify vital settings.
     private class SettingMenu extends Window {
         public SettingMenu() {
             super("settings");
@@ -230,8 +250,11 @@ public class Login extends Window {
             certificateRetrieve.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
             certificateRetrieve.setBounds(100,50,150,20);
             certificateRetrieve.addActionListener(e -> {
+                // The user specifies a port to probe the server into sending a new certificate through which communication will be encrypted
+
                 String ip = "";
                 int port = 0;
+                // spliting into ip and port veriables
                 for(String i : certificateIP.getText().split(":")) {
                     if(i.contains(".") && i.length() >= 7) {
                         ip = i;
@@ -239,6 +262,7 @@ public class Login extends Window {
                         port = Integer.parseUnsignedInt(i);
                     }
                 }
+                // checks valid port range and sends details to me.cambria2211826.Certificate class to get data from server
                 if (ip.length() > 2 && port >= 1080 && port <= 49151) {
                     Certificate cert = new Certificate();
                     boolean result = cert.createCertificateFromServer(ip, port);
@@ -250,7 +274,7 @@ public class Login extends Window {
                     }
                 }
             });
-
+            //appends all the components to the frame
             panel.add(title);
             panel.add(certificateLabel);
             panel.add(certificateIP);
@@ -259,10 +283,10 @@ public class Login extends Window {
 
             this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-            run();
+            run(); // <- java.swing version of mainloop in python
         }
     }
-
+    // uses SHA 256 to encrypt  string by the parameter given and return the hashed string
     public static String encryptString(String str){
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");

@@ -5,14 +5,15 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class Greeter extends me.cambria22118626.Window {
-
+    //globals
     private final int  WIDTH = 600;
     private final int HEIGHT = 400;
     private final Config cfg = Config.getInstance();
 
+    //main function
     public Greeter() {
         super("Greeter");
-
+        //creates a frame in which long text is displayed goin g through the instructions how to use the program
         BorderLayout layout = new BorderLayout();
         JLabel greetingTitle = new JLabel("Greetings!");
         greetingTitle.setFont(new Font("Comic Sans MS", Font.BOLD, 36));
@@ -28,6 +29,8 @@ public class Greeter extends me.cambria22118626.Window {
                 ...
                 this and that 
                 blah blah""";
+
+
         JTextArea longTextArea = new JTextArea(longTextStr);
         longTextArea.setEditable(false);
         longTextArea.setFont(new Font("Fira Code", Font.PLAIN, 16));
@@ -37,12 +40,14 @@ public class Greeter extends me.cambria22118626.Window {
 
         OverridePanelLayout(layout);
 
+        //confirmation button that will open the main login menu once pressed
         JButton confirmationButton = new JButton("I understand");
         confirmationButton.addActionListener(e -> {
            new me.cambria22118626.Login();
            dispose();
         });
 
+        //adds all the comps it oa w teh window
         panel.add(greetingTitle, BorderLayout.NORTH);
         panel.add(longTextArea, BorderLayout.CENTER);
         panel.add(confirmationButton, BorderLayout.SOUTH);
