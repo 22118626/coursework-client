@@ -54,37 +54,6 @@ public class Login extends Window {
         password.setForeground(Color.BLACK);
         password.setBounds(110,75,100,20);
 
-        //this binds a function to the DBConnection entry window to validate that only numbers and IP specific characters are entered:(0-9 OR . OR :)
-        JTextField DBConnectionIP = new JTextField();
-        DBConnectionIP.setFont(new Font("Visitor TT1 BRK", Font.PLAIN, 16));
-        DBConnectionIP.setForeground(Color.BLACK);
-        DBConnectionIP.setToolTipText("example: 10.0.4.129:25565");
-        DBConnectionIP.getDocument().addDocumentListener(new DocumentListener() {
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                // not invoking later causes 'Attempt to mutate in notification' java.lang.IllegalStateException error
-                SwingUtilities.invokeLater(() -> {
-                    try{
-                        char character = e.getDocument().getText(e.getOffset(),e.getLength()).charAt(0);
-                        if(!(character == '.' || (  character >= '0' && character <= '9' ) || character ==':')) { //shows warning window if input wrong the first time then every 5 incorrect formats, if the character inputted was not '.' ':' or a range between 0:9
-                            e.getDocument().remove(e.getOffset(), 1);
-                            Toolkit.getDefaultToolkit().beep();
-                            //shows an warning window if every 5 incorrect characters input into thefield
-                            if (Login.IPInputError++ % 5 == 0) {
-                                JOptionPane.showMessageDialog(new JFrame(), "Please only enter 0-9, '.' and ':'", "warning", JOptionPane.WARNING_MESSAGE);
-
-                            }
-                        }
-                    } catch (BadLocationException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
-            }
-            @Override public void removeUpdate(DocumentEvent e) {}
-            @Override public void changedUpdate(DocumentEvent e) {}
-        });
-        DBConnectionIP.setBounds(5,150,100,20);
 
 
         // create Buttons and bind them with their respective functions
@@ -114,7 +83,6 @@ public class Login extends Window {
                 if ((Boolean) (resultJ.get("access"))) {
                     Main.persistMemJson.put("Username", username.getText());
                     Main.persistMemJson.put("HashedPassword", HashedP);
-                    Main.persistMemJson.put("IPAddress", DBConnectionIP.getText());
                     Main.persistMemJson.put("loginCreds", resultJ.get("data"));
                     new MainMenu();
                     this.dispose();
@@ -125,32 +93,6 @@ public class Login extends Window {
             }
         });
 
-        // DBConnect button uses the IP entered into the DBConnect entry field to bind a listening socket to
-        // a port where data will be sent to the server and listened from the server
-
-        JButton DBConnect = new JButton("Connect");
-        DBConnect.setFont(new Font("Comic Sans MS", Font.PLAIN, 10));
-        DBConnect.setForeground(cfg.windowThemingColours.get("TextColour"));
-        DBConnect.setBackground((cfg.windowThemingColours.get("SecondaryBG")));
-        DBConnect.addActionListener(e -> {
-            System.out.println(DBConnectionIP.getText());
-            ClientSock soc = ClientSock.getInstance();
-            String ip = "";
-            int port = 0;
-            // split the text from the field into individual IP and Port variables and required by the WinSock function
-            for(String i : DBConnectionIP.getText().split("\\:")) {
-                if(i.contains(".") && i.length() >= 7) {
-                    ip = i;
-                }else if (! i.contains(".")) {
-                    port = Integer.parseUnsignedInt(i);
-                }
-            }
-            //ensure that the port is longer then 2 digits and is not trying to bind to any protected ranges and is not larger than the current standard states
-            if (ip.length() > 2 && port >= 1080 && port <= 49151) {
-                    soc.setServerAddress(ip, port);
-            }
-        });
-        DBConnect.setBounds(150,150,75,20);
 
         //shows setting menu when pressed
         JButton settingsButton = new JButton("Settings");
@@ -168,8 +110,6 @@ public class Login extends Window {
         panel.add(passwordLabel);
         panel.add(password);
         panel.add(loginButton);
-        panel.add(DBConnectionIP);
-        panel.add(DBConnect);
         panel.add(settingsButton);
         bgColour = cfg.windowThemingColours.get("MainBG");
         panel.setBackground(cfg.windowThemingColours.get("MainBG"));
@@ -219,73 +159,6 @@ public class Login extends Window {
     }
 
 
-    //setting menu in the login screen to modify vital settings.
-    private class SettingMenu extends Window {
-        public SettingMenu() {
-            super("settings");
-            this.Width = 300;
-            this.Height = 400;
-
-            JLabel title = new JLabel("Settings");
-            title.setFont(new Font("Comic Sans MS", Font.PLAIN, 18));
-            title.setForeground(cfg.windowThemingColours.get("TextColour") );
-            title.setBounds(5,5,245,20);
-
-
-            JLabel certificateLabel = new JLabel("Certificate");
-            certificateLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 16));
-            certificateLabel.setForeground(cfg.windowThemingColours.get("TextColour"));
-            certificateLabel.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
-            certificateLabel.setBounds(5,20,150,20);
-
-            JTextField certificateIP = new JTextField();
-            certificateIP.setFont(new Font("Comic Sans MS", Font.PLAIN, 12));
-            certificateIP.setForeground(cfg.windowThemingColours.get("TextColour"));
-            certificateIP.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
-            certificateIP.setBounds(5,50,100,20);
-
-            JButton certificateRetrieve = new JButton("Retrieve Certificate");
-            certificateRetrieve.setFont(new Font("Comic Sans MS", Font.PLAIN, 10));
-            certificateRetrieve.setForeground(cfg.windowThemingColours.get("TextColour"));
-            certificateRetrieve.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
-            certificateRetrieve.setBounds(100,50,150,20);
-            certificateRetrieve.addActionListener(e -> {
-                // The user specifies a port to probe the server into sending a new certificate through which communication will be encrypted
-
-                String ip = "";
-                int port = 0;
-                // spliting into ip and port veriables
-                for(String i : certificateIP.getText().split(":")) {
-                    if(i.contains(".") && i.length() >= 7) {
-                        ip = i;
-                    }else if (! i.contains(".")) {
-                        port = Integer.parseUnsignedInt(i);
-                    }
-                }
-                // checks valid port range and sends details to me.cambria2211826.Certificate class to get data from server
-                if (ip.length() > 2 && port >= 1080 && port <= 49151) {
-                    Certificate cert = new Certificate();
-                    boolean result = cert.createCertificateFromServer(ip, port);
-                    if (result) {
-                        JOptionPane.showMessageDialog(null, "Certificate created");
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(null, "Certificate not created successfully");
-                    }
-                }
-            });
-            //appends all the components to the frame
-            panel.add(title);
-            panel.add(certificateLabel);
-            panel.add(certificateIP);
-            panel.add(certificateRetrieve);
-            panel.setBackground(cfg.windowThemingColours.get("MainBG"));
-
-            this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-            run(); // <- java.swing version of mainloop in python
-        }
-    }
     // uses SHA 256 to encrypt  string by the parameter given and return the hashed string
     public static String encryptString(String str){
         try {

@@ -1,4 +1,10 @@
 @echo off
-cd /d %~dp0
+echo Running Gradle build...
+gradlew.bat build
 
-".\bin\jdk-17.0.4.101-hotspot\bin\java.exe" -jar "build\libs\coursework-client-1.0-SNAPSHOT.jar"
+echo Build completed successfully.
+
+echo Running the JAR file...
+java -jar .\build\libs\coursework-client-1.0-SNAPSHOT.jar
+
+pause

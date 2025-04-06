@@ -167,8 +167,13 @@ public class MainMenu extends Window{
         logout.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
         gbc = new GridBagConstraints();
         gbc.gridy = 4; gbc.gridx = 1;
-
         panelRight.add(logout, gbc);
+
+        JButton settings = new JButton("Settings");
+        settings.setForeground(cfg.windowThemingColours.get("TextColour"));
+        settings.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+        gbc.gridx=2;
+        panelRight.add(settings, gbc);
 
         OverridePanelLayout(new BorderLayout());
         panel.add(panelLeft, BorderLayout.CENTER);

@@ -76,6 +76,8 @@ import java.net.SocketAddress;
 import javax.net.ssl.*;
 import java.io.*;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class ClientSock {
     private static ClientSock instance;
@@ -84,8 +86,10 @@ public class ClientSock {
     private SSLSocket sslSocket; // Change to SSLSocket
 
     private ClientSock() {
-        this.host = "127.0.0.1";
-        this.port = 25565;
+        Config cfg = Config.getInstance();
+        Map<String, Object> ConnectAddress =  (Map<String, Object>) cfg.allNodes.get("ConnectAddress");
+        this.host = ConnectAddress.get("connectIP").toString();
+        this.port = Integer.parseInt(ConnectAddress.get("connectPort").toString());
     }
 
     //singleton call function returns the instance

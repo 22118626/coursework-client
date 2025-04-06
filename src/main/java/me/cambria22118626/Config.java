@@ -21,7 +21,8 @@ public class Config {
 
     private static File loc = new File(System.getenv("USERPROFILE")+"\\.coursework-config");
 
-    protected Map<String,Color> windowThemingColours = new HashMap<>();
+    protected static Map<String,Color> windowThemingColours = new HashMap<>();
+    protected static Map<String, Object> allNodes = new HashMap<>();
 
     private Config() {
         ObjectMapper mapper = new ObjectMapper();
@@ -37,8 +38,9 @@ public class Config {
             Map<String, Object> map = mapper.readValue(new File(loc+"\\mainCFG.json"), Map.class);
             ArrayList<Map<String,Object>> colourlist = (ArrayList<Map<String,Object>>) map.get("colours");
             for (Map<String, Object> colourObject : colourlist) {
-                windowThemingColours.put((String) colourObject.get("name"), new Color((Integer) colourObject.get("red"), (Integer) colourObject.get("green"), (Integer) colourObject.get("blue")));
+                this.windowThemingColours.put((String) colourObject.get("name"), new Color((Integer) colourObject.get("red"), (Integer) colourObject.get("green"), (Integer) colourObject.get("blue")));
             }
+            this.allNodes = mapper.readValue(new File(loc+"\\mainCFG.json"), Map.class);
         }
         catch (IOException e) {
             System.out.println("oopsie poopsie");
@@ -96,5 +98,10 @@ public class Config {
         return loc;
     }
 
+    protected static void commit() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        File out = new File(loc.getAbsolutePath()+"\\mainCFG.json");
+        mapper.writeValue(out, allNodes);
+    }
 
 }
