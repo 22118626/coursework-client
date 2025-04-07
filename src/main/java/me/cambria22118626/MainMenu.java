@@ -78,16 +78,6 @@ public class MainMenu extends Window{
             grid.add(btn);
         }
 
-        // make dummy buttons TEMPORARY TODO: Remove
-        for(int i = 1; i<=30; i++) {
-            JButton btn = new JButton("Button "+i);
-            btn.setForeground(cfg.windowThemingColours.get("TextColour"));
-            btn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
-            btn.setPreferredSize(new Dimension(200, 120));
-            btn.setBackground(new Color(((int) (Math.random()*5+Math.sin((double) i /8)*10) << 16) + ((int) (Math.random()*10+Math.sin((double) i /8)*30) << 8) + (int) (Math.random()*16+Math.sin((double) i /10)*15+48) )); // R=5-25, G=0-20, B=32-96
-            grid.add(btn);
-            System.out.println("Button "+i);
-        }
 
         // scrollabr to add more buttion ten the screen height allows
         JScrollPane scroll = new JScrollPane(grid);
@@ -165,6 +155,7 @@ public class MainMenu extends Window{
         JButton logout = new JButton("Logout");
         logout.setForeground(cfg.windowThemingColours.get("TextColour"));
         logout.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+        logout.addActionListener(e -> {this.dispose(); Main.persistMemJson.clear();System.out.println(Main.persistMemJson.size());new Login();});
         gbc = new GridBagConstraints();
         gbc.gridy = 4; gbc.gridx = 1;
         panelRight.add(logout, gbc);

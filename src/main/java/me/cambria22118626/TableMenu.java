@@ -50,7 +50,7 @@ public class TableMenu extends Window{
         c.gridy = 1;
         panel.add(create, c);
 
-        JButton modview = new JButton("Modify or View record");
+        JButton modview = new JButton("Modify/View/delete record");
         modview.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
         modview.setPreferredSize(new Dimension(200, 120));
         modview.setBackground(new Color(0x03033C)); // RGB=32, 32, 128
@@ -60,14 +60,6 @@ public class TableMenu extends Window{
         c.gridy = 1;
         panel.add(modview, c);
 
-        JButton delete = new JButton("Delete record");
-        delete.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
-        delete.setPreferredSize(new Dimension(200, 120));
-        delete.setBackground(new Color(0x330404)); // RGB=128, 32, 32
-        delete.setForeground(cfg.windowThemingColours.get("TextColour"));
-        c.gridx = 5;
-        c.gridy = 1;
-        panel.add(delete, c);
     }
 
     private void CreateWindow() { //create window that controlls all the creating of a new record
@@ -325,6 +317,9 @@ public class TableMenu extends Window{
 
 
 
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(rootPane, "error code: "+Jres.get("code").asText()+"\n"+"Description: "+Jres.get("description").asText(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);

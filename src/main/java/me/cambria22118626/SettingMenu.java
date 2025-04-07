@@ -41,7 +41,32 @@ public class SettingMenu extends Window {
 
         JTextField certificateIP = new JTextField();
         certificateIP.setFont(new Font("Comic Sans MS", Font.PLAIN, 12));
-        certificateIP.setForeground(cfg.windowThemingColours.get("TextColour"));
+        certificateIP.setToolTipText("example: 10.0.4.129:25565");
+        certificateIP.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                // not invoking later causes 'Attempt to mutate in notification' java.lang.IllegalStateException error
+                SwingUtilities.invokeLater(() -> {
+                    try{
+                        char character = e.getDocument().getText(e.getOffset(),e.getLength()).charAt(0);
+                        if(!(character == '.' || (  character >= '0' && character <= '9' ) || character ==':')) { //shows warning window if input wrong the first time then every 5 incorrect formats, if the character inputted was not '.' ':' or a range between 0:9
+                            e.getDocument().remove(e.getOffset(), 1);
+                            Toolkit.getDefaultToolkit().beep();
+                            //shows an warning window if every 5 incorrect characters input into thefield
+                            if (Login.IPInputError++ % 5 == 0) {
+                                JOptionPane.showMessageDialog(new JFrame(), "Please only enter 0-9, '.' and ':'", "warning", JOptionPane.WARNING_MESSAGE);
+
+                            }
+                        }
+                    } catch (BadLocationException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+            }
+            @Override public void removeUpdate(DocumentEvent e) {}
+            @Override public void changedUpdate(DocumentEvent e) {}
+        });
         certificateIP.setBounds(5,60,120,20);
 
         JButton certificateRetrieve = new JButton("Retrieve");

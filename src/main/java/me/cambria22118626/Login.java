@@ -87,6 +87,9 @@ public class Login extends Window {
                     new MainMenu();
                     this.dispose();
                 }
+                else {
+                    JOptionPane.showMessageDialog(new JFrame(), "incorrect credentials", "warning", JOptionPane.WARNING_MESSAGE);
+                }
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(new JFrame(), " Error has occured when sending packet to the server.\n\nHas the correct IP and port been entered for the database connection?", "Error", JOptionPane.ERROR_MESSAGE);
                 throw new RuntimeException(ex);
