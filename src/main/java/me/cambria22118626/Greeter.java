@@ -26,9 +26,13 @@ public class Greeter extends me.cambria22118626.Window {
                 This appears to be your first time using the app!
                 1) make sure you enter the right IP into the database connection entry before logging in.
                 2) login with your given credentials.
-                ...
-                this and that 
-                blah blah""";
+                Thank you for choosing to use our program! 
+                We truly appreciate your support and trust in our software. 
+                Your feedback is invaluable to us, and we're always working to improve. 
+                We hope you had a smooth experience and that our program meets your needs. 
+                If you have any questions or suggestions, 
+                feel free to reach out. 
+                Thanks again, and happy using!""";
 
 
         JTextArea longTextArea = new JTextArea(longTextStr);

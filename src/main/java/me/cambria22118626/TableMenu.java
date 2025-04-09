@@ -1,6 +1,7 @@
 package me.cambria22118626;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,8 +10,11 @@ import javax.swing.*;
 import java.awt.*;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.*;
 
 public class TableMenu extends Window{
     private Map<String, Object> table;
@@ -201,6 +205,29 @@ public class TableMenu extends Window{
                 entry.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
                 entry.setName(field.get("name").asText());
                 panel.add(entry, c);
+                if(field.get("type").asInt() == 4) {
+                    System.out.println(field.get("type").asInt());
+                    c.gridy++;
+                    JButton foreignBtn = new JButton("find Foreign key");
+                    foreignBtn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
+                    foreignBtn.setForeground(cfg.windowThemingColours.get("TextColour"));
+                    foreignBtn.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+                    foreignBtn.addActionListener(e -> {
+                        Map<String, Object>map = OM.convertValue(field, Map.class);
+                        map.put("value", entry.getText());
+                        this.foreignKey(map).thenAccept(results -> {
+                            System.out.println("Foreign return:"+results);
+                            if (results >= 0) {
+                                entry.setText(results+"");
+                            }
+                        });
+
+
+
+                    });
+                    panel.add(foreignBtn, c);
+                    c.gridy--;
+                }
                 c.gridy--;
             }
             //uses the data entered to query the databse if the record exists and places the retrieved data into the correct boxes
@@ -290,7 +317,7 @@ public class TableMenu extends Window{
                             gbc.gridx = 3;
                             gbc.gridy = c.gridy+2;
 
-                            panel.add(DelBtn, gbc);
+                            panel.add(DelBtn, new GridBagConstraints(2,5,1,1,1.0,1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
 
                             JButton ModBtn = new JButton("Modify");
                             ModBtn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
@@ -309,7 +336,7 @@ public class TableMenu extends Window{
 
                             });
                             gbc.gridx++;
-                            panel.add(ModBtn, gbc);
+                            panel.add(ModBtn, new GridBagConstraints(3,5,1,1,1.0,1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
                             System.out.println("added buttons?");
                             panel.revalidate();
                             panel.repaint();
@@ -327,12 +354,152 @@ public class TableMenu extends Window{
             }});
             c.gridy += 2;
             c.gridx = 1;
-            panel.add(FindBtn, c);
+            panel.add(FindBtn, new GridBagConstraints(0, 5, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
             panel.setBackground(cfg.windowThemingColours.get("MainBG"));
             repaint();
             revalidate();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected CompletableFuture<Integer> foreignKey(Map<String, Object> foreingDataType) {
+        System.out.println("foreignKey");
+        if (!foreingDataType.containsKey("TableName")) {return CompletableFuture.completedFuture(-1);}
+        if (!foreingDataType.containsKey("value")) {return CompletableFuture.completedFuture(-2);}
+        Window root = new Window(foreingDataType.get("TableName").toString());
+        root.setBackground(cfg.windowThemingColours.get("MainBG"));
+        root.OverridePanelLayout(new GridBagLayout());
+        root.OverridePanelClose(DISPOSE_ON_CLOSE);
+
+        Map<String, Object> table = null;
+        for (Map<String,Object> tableobject : Main.tables) {
+            if (tableobject.get("tableName").toString().equals(foreingDataType.get("TableName").toString())) {
+                table = tableobject;
+            }
+        }
+        if(table == null) {return CompletableFuture.completedFuture(-3);}
+        System.out.println("TABLE: "+table.keySet()+"\n"+table.values()+"\n"+table.get("tableName").toString());
+
+        Map<String, Object> primaryField = null;
+        ArrayList<Map<String, Object>> fields = (ArrayList<Map<String, Object>>) table.get("array");
+        for(Map<String, Object>field : fields) {if ((Boolean) field.get("isPrimary") == true) {primaryField = field;}}
+
+        ClientSock socket = ClientSock.getInstance();
+        ObjectMapper OM = new ObjectMapper();
+        Map<String, Object> data = new HashMap<>();
+        data.put("field", primaryField.get("name").toString());
+        data.put("value", foreingDataType.get("value").toString());
+        Map<String, Object> result = null;
+        try {
+            result = !foreingDataType.get("value").toString().isEmpty() ? OM.readValue(socket.sendMessage("{\"mode\":\"search\",\"tableName\":\"" + table.get("tableName") + "\",\"data\":" + OM.writeValueAsString(data) + ",\"authentication\":" + OM.writeValueAsString(Main.persistMemJson.get("loginCreds")) + "}"), Map.class) : null;
+        }catch (Exception exception) {
+            throw new RuntimeException(exception);
+        }
+        for (int i = 0; i < fields.size(); i++) {
+            System.out.println("Fields"+i+"  "+fields.get(i).values().toString());
+            Label Namelabel = new Label(fields.get(i).get("name").toString());
+            Namelabel.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
+            Namelabel.setForeground(cfg.windowThemingColours.get("TextColour"));
+            Namelabel.setBackground(cfg.windowThemingColours.get("MainBG"));
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.BOTH;
+            gbc.weightx = 1.0;
+            gbc.weighty = 1.0;
+            gbc.gridx = i;
+            gbc.gridy = 0;
+            root.panel.add(Namelabel, gbc);
+            JTextField entryField = new JTextField();
+            entryField.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
+            entryField.setForeground(cfg.windowThemingColours.get("TextColour"));
+            entryField.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+            entryField.setName(fields.get(i).get("name").toString());
+            entryField.setText((result==null || ((Integer) result.get("code"))!=0) ? null : ((Map<String,Object>) result.get("data")).get(fields.get(i).get("name").toString()).toString());
+            GridBagConstraints gbc1 = new GridBagConstraints();
+            gbc1.fill = GridBagConstraints.BOTH;
+            gbc1.weightx = 1.0;
+            gbc1.weighty = 1.0;
+            gbc1.gridx = i;
+            gbc1.gridy = 1;
+            root.panel.add(entryField, gbc1);
+            System.out.println();
+        }
+        JButton SearchBtn = new JButton("search");
+        SearchBtn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
+        SearchBtn.setForeground(cfg.windowThemingColours.get("TextColour"));
+        SearchBtn.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        CompletableFuture<Integer> futureResult = new CompletableFuture<>();
+        SearchBtn.addActionListener(e1 -> {
+            try {
+                Map<String, Object> data1 = new HashMap<>();
+
+                for (Component comp :  root.panel.getComponents()) {
+                    if (comp instanceof JTextField) {
+                        JTextField textField = (JTextField) comp;
+                        String fieldName = textField.getName();
+                        System.out.println(fieldName);
+                        for(Map<String, Object> field1 : fields) {
+                            System.out.println("entry: "+field1.get("name")+" "+field1.get("type"));
+                            if(!field1.get("name").toString().equals(fieldName) || textField.getText().isEmpty()) {
+                                continue;
+                            }
+                            System.out.println(fieldName+" "+textField.getText());
+                            data.put("field", fieldName);
+                            data.put("value", textField.getText());
+                        }
+                    }
+                }
+                String btnsearch = socket.sendMessage("{\"mode\":\"search\",\"tableName\":\"" + foreingDataType.get("TableName") + "\",\"data\":" + OM.writeValueAsString(data) + ",\"authentication\":" + OM.writeValueAsString(Main.persistMemJson.get("loginCreds")) + "}");
+                System.out.println(btnsearch);
+                Map<String,Object> btnsearchtemp = OM.readValue(btnsearch, Map.class);
+                Map<String,Object> rootNode = (Map<String,Object>) btnsearchtemp.get("data");
+                for (Component comp :  root.panel.getComponents()) {
+                    System.out.println(1+"\t"+comp);
+                    if (comp instanceof JTextField) {
+                        System.out.println(2);
+
+                        JTextField field2 = (JTextField) comp;
+                        String fieldName = field2.getName();
+
+                        if(!rootNode.containsKey(fieldName)) {
+                            continue;
+                        } else {
+                            System.out.println(3);
+                            field2.setText(rootNode.get(fieldName).toString());
+                        }
+                    }
+                }
+            }catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        root.panel.add(SearchBtn, new GridBagConstraints(0, 4, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+        JButton SetBtn = new JButton("set");
+        SetBtn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
+        SetBtn.setForeground(cfg.windowThemingColours.get("TextColour"));
+        SetBtn.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+        Map<String, Object> finalPrimaryField = primaryField;
+        SetBtn.addActionListener(e1 -> {
+            executor.submit(() -> {
+                for (Component comp :  root.panel.getComponents()) {
+                    if (comp instanceof JTextField && ((JTextField) comp).getName().equals(finalPrimaryField.get("name").toString())) {
+                        try {
+                            futureResult.complete(Integer.parseInt(((JTextField) comp).getText().toString()));
+                            root.dispose();
+                            return;
+                        }catch (NumberFormatException ex) {
+                            futureResult.completeExceptionally(new IllegalArgumentException("Invalid number format"));
+                        }
+
+                    }
+                }
+                finalPrimaryField.get("name").toString();
+            });
+        });
+        root.panel.add(SetBtn, new GridBagConstraints(1, 4, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+
+        root.run();
+        return futureResult;
     }
 }

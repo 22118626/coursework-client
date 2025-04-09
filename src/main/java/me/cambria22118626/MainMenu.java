@@ -163,6 +163,7 @@ public class MainMenu extends Window{
         JButton settings = new JButton("Settings");
         settings.setForeground(cfg.windowThemingColours.get("TextColour"));
         settings.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+        settings.addActionListener(e -> {new SettingMenu();});
         gbc.gridx=2;
         panelRight.add(settings, gbc);
 
