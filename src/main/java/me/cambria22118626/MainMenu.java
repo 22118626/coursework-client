@@ -51,7 +51,7 @@ public class MainMenu extends Window{
                 Main.tables.add(array.get(i));
                 System.out.println(array.get(i).get("tableName"));
             }
-
+            Main.tables.forEach(t -> System.out.println(t.get("tableName")));
         }
         catch(Exception e){
             e.printStackTrace();
@@ -61,7 +61,7 @@ public class MainMenu extends Window{
         JPanel grid = new JPanel();
         grid.setLayout(new WrapLayout());
         grid.setOpaque(true);
-        grid.setBackground(cfg.windowThemingColours.get("PrimaryBG"));
+        grid.setBackground(cfg.windowThemingColours.get("MainBG"));
 
         // itterate though the table array and add the buttion into the frame
         for(Map<String, Object> table : Main.tables) {
@@ -155,7 +155,7 @@ public class MainMenu extends Window{
         JButton logout = new JButton("Logout");
         logout.setForeground(cfg.windowThemingColours.get("TextColour"));
         logout.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
-        logout.addActionListener(e -> {this.dispose(); Main.persistMemJson.clear();System.out.println(Main.persistMemJson.size());new Login();});
+        logout.addActionListener(e -> {this.dispose(); Main.persistMemJson.clear();Main.tables.clear();System.out.println(Main.persistMemJson.size());new Login();});
         gbc = new GridBagConstraints();
         gbc.gridy = 4; gbc.gridx = 1;
         panelRight.add(logout, gbc);

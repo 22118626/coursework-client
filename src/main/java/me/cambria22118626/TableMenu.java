@@ -101,6 +101,29 @@ public class TableMenu extends Window{
                 entry.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
                 entry.setName(field.get("name").asText());
                 panel.add(entry, c);
+                if(field.get("type").asInt() == 4) {
+                    System.out.println(field.get("type").asInt());
+                    c.gridy++;
+                    JButton foreignBtn = new JButton("find Foreign key");
+                    foreignBtn.setFont(new Font("Corbel Regular", Font.PLAIN, 20));
+                    foreignBtn.setForeground(cfg.windowThemingColours.get("TextColour"));
+                    foreignBtn.setBackground(cfg.windowThemingColours.get("SecondaryBG"));
+                    foreignBtn.addActionListener(e -> {
+                        Map<String, Object>map = OM.convertValue(field, Map.class);
+                        map.put("value", entry.getText());
+                        this.foreignKey(map).thenAccept(results -> {
+                            System.out.println("Foreign return:"+results);
+                            if (results >= 0) {
+                                entry.setText(results+"");
+                            }
+                        });
+
+
+
+                    });
+                    panel.add(foreignBtn, c);
+                    c.gridy--;
+                }
                 c.gridy--;
             }
 
@@ -129,7 +152,7 @@ public class TableMenu extends Window{
             }});
             c.gridy += 2;
             c.gridx = 1;
-            panel.add(ConfirmBtn, c);
+            panel.add(ConfirmBtn, new GridBagConstraints(0,5,1,1,1.0,1.0,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
             panel.setBackground(cfg.windowThemingColours.get("MainBG"));
             repaint();
             revalidate();
@@ -281,7 +304,11 @@ public class TableMenu extends Window{
                                 if(!rootNode.has(fieldName)) {
                                     continue;
                                 } else {
-                                    field.setText(rootNode.get(fieldName).asText());
+                                    try {
+                                        field.setText(rootNode.get(fieldName).get("value").asText());
+                                    }catch (Exception ex) {
+                                        field.setText(rootNode.get(fieldName).asText());
+                                    }
                                 }
                             }
                             else if (comp instanceof JButton) {

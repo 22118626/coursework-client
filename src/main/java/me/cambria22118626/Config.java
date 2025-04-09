@@ -80,6 +80,13 @@ public class Config {
             Textcolour.put("green", 244);
             Textcolour.put("blue",244);
 
+            HashMap<String, Object> TertiaryBGcolour = new HashMap<>();
+            TertiaryBGcolour.put("name","TertiaryBG");
+            TertiaryBGcolour.put("red", 37);
+            TertiaryBGcolour.put("green",38);
+            TertiaryBGcolour.put("blue",42);
+
+
             ArrayList<Map<String, Object>> ColoursObjects = new ArrayList<>();
             ColoursObjects.add(MainBGcolour);
             ColoursObjects.add(SecBGcolour);
